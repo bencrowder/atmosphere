@@ -42,3 +42,19 @@ when you're done).
 ## Dependencies
 
 - Install Sox. (Atmosphere uses its `play` command.)
+
+
+## Sample Sounds
+
+These are from the [relax](https://github.com/brunobord/relax) README and have
+worked well for me:
+
+- [Rain in forest](https://www.freesound.org/people/inchadney/sounds/22132/)
+- [rbh thunder storm](https://www.freesound.org/people/RHumphries/sounds/2523/)
+- [Storm](https://www.freesound.org/people/Erdie/sounds/23221/)
+- [SummerEveningInMyGarden](https://www.freesound.org/people/acclivity/sounds/30832/)
+- [Wilderness Hillside](https://www.freesound.org/people/Arctura/sounds/39829/)
+- [Wind](https://www.freesound.org/people/Glaneur%20de%20sons/sounds/104952/)
+- [oceanwavescrushing](https://www.freesound.org/people/Luftrum/sounds/48412/)
+- [fireplace](https://www.freesound.org/people/martats/sounds/138018/)
+- [blackforest](https://www.freesound.org/people/reinsamba/sounds/204195/)
