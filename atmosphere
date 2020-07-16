@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+"""
+Atmosphere is a small utility to play background sounds, ala Noisli.
+
+Put the script in your PATH. Create a config file (default path is specified in
+CONFIG_PATH below) where the first line is the path to the folder with the
+sound files, and any subsequent non-blank non-# lines are volume settings for
+individual files (specified as "[basename] [gain]" -- e.g., "forest_rain 1.2"
+if forest_rain.wav is one of the files and you want it a bit louder). If the
+gain is set to 1, it'll be unchanged; greater than 1 will make it louder, and
+less than 1 will make it quieter.
+"""
+
+import os
+import subprocess
+import threading
+
+
+# Change this as wanted.
+CONFIG_PATH = f'~/.config/atmosphere/atmosphererc'
+DEFAULT_VOLUME = 0.5
+
+
+def parse_config():
+    """
+    Loads the config.
+    """
+    with open(os.path.expanduser(CONFIG_PATH), 'r') as file:
+        lines = file.readlines()
+
+    sound_path = None
+    volumes = {}
+
+    for line in lines:
+        line = line.strip()
+
+        # Ignore blank lines and comments
+        if not line or line[0] == '#':
+            continue
+
+        # First line is sound path
+        if not sound_path:
+            sound_path = line
+            continue
+
+        # Everything else is filename + volume pairs
+        # This assumes no spaces in the filenames
+        filename, volume = line.split()
+        volumes[filename] = volume
+
+    return {
+        'sound_path': sound_path,
+        'volumes': volumes,
+    }
+
+
+def get_filenames(config):
+    """
+    Loads the sound path and returns a list of files to play.
+    """
+    files = []
+
+    for _, _, filenames in os.walk(config['sound_path']):
+        for filename in sorted(filenames):
+            files.append(filename)
+
+    return files
+
+
+def play_sound(config, file):
+    """
+    Plays a sound, looping, at the volume set (or the default).
+    """
+    path = os.path.join(config['sound_path'], file)
+
+    vol_file = os.path.splitext(file)[0]
+    vol = config['volumes'].get(vol_file, DEFAULT_VOLUME)
+
+    print(f'  - {file}, vol: {vol}')
+
+    subprocess.run([
+        'play',
+        # Don't print output
+        '-q',
+        f'{path}',
+        # Loop
+        'repeat',
+        '-',
+        # Volume
+        'vol',
+        f'{vol}',
+    ])
+
+
+def play_sounds(config, files):
+    """
+    Starts each sound in its own thread, looping at the correct volume.
+    """
+    print('Playing:')
+
+    for file in files:
+        threading.Thread(
+            target=lambda f=file: play_sound(config, f),
+            daemon=True,
+        ).start()
+
+
+# Load the sound path and volume settings
+CONFIG = parse_config()
+
+# Get sound files to play
+FILES = get_filenames(CONFIG)
+
+# And play them
+play_sounds(CONFIG, FILES)
+
+# Set up an infinite loop so the background threads can run
+while True:
+    pass
